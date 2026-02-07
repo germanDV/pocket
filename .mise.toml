@@ -1,0 +1,10 @@
+[tasks.t]
+description = "Run all tests"
+run = "go test ./... -v"
+
+[tasks.audit]
+description = "Run vet and govulncheck"
+run = """
+go vet ./...
+govulncheck ./...
+"""
