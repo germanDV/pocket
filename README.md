@@ -82,6 +82,35 @@ diff := pocket.SafeSub(100, 50)           // 50
 diff = pocket.SafeSub(uint8(0), uint8(1)) // panics: unsigned integer underflow
 ```
 
+### `SafeMul`
+Returns the product of two integers, panicking if the result overflows.
+
+```go
+product := pocket.SafeMul(10, 20)              // 200
+product = pocket.SafeMul(uint8(100), uint8(3)) // panics: unsigned integer overflow
+```
+
+### `SafeDiv`
+Returns the division of two integers, panicking if dividing by zero or if the result overflows.
+
+```go
+quotient := pocket.SafeDiv(100, 4)   // 25
+quotient = pocket.SafeDiv(100, 0)    // panics: division by zero
+quotient = pocket.SafeDiv(-128, -1)  // panics: integer overflow (int8 MinInt / -1)
+```
+
+### Try... Variants
+Each safe math function has a corresponding `Try...` version that returns an error instead of panicking. Use these when you want to handle overflow/underflow errors gracefully.
+
+```go
+// TrySafeAdd, TrySafeSub, TrySafeMul, TrySafeDiv return (T, error)
+sum, err := pocket.TrySafeAdd(uint8(255), uint8(1))
+if err != nil {
+    // Handle overflow error without panic
+    log.Printf("Overflow: %v", err)
+}
+```
+
 ## Test Assertion Functions
 
 - `AssertNotNil` Asserts that the given value is not nil.
@@ -115,6 +144,23 @@ fmt.Printf("Port: %d\n", config.Port)
 ```
 
 Supported types: `string`, `int`, `bool`, `time.Duration`
+
+## String Functions
+
+### `SafeCompare`
+Performs a constant-time comparison of two strings to protect against timing attacks. It hashes both strings using SHA-256 to ensure they have the same length before comparison.
+
+```go
+result := pocket.SafeCompare("secret_token", "secret_token") // true
+result = pocket.SafeCompare("token1", "token2")              // false
+```
+
+### `GenerateString`
+Generates a random string of the specified length using `crypto/rand`. The result is base64 URL-encoded. Note: The returned string will be longer than the input length due to base64 encoding. Panics if random number generation fails.
+
+```go
+token := pocket.GenerateString(32) // Random URL-safe string
+```
 
 ## Money Functions
 
