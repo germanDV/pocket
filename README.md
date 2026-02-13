@@ -116,6 +116,23 @@ fmt.Printf("Port: %d\n", config.Port)
 
 Supported types: `string`, `int`, `bool`, `time.Duration`
 
+## String Functions
+
+### `SafeCompare`
+Performs a constant-time comparison of two strings to protect against timing attacks. It hashes both strings using SHA-256 to ensure they have the same length before comparison.
+
+```go
+result := pocket.SafeCompare("secret_token", "secret_token") // true
+result = pocket.SafeCompare("token1", "token2")              // false
+```
+
+### `GenerateString`
+Generates a random string of the specified length using `crypto/rand`. The result is base64 URL-encoded. Note: The returned string will be longer than the input length due to base64 encoding. Panics if random number generation fails.
+
+```go
+token := pocket.GenerateString(32) // Random URL-safe string
+```
+
 ## Money Functions
 
 Pocket provides a `Money` type for working with monetary values. Money instances are immutable and support safe arithmetic operations with overflow protection.
